@@ -236,4 +236,5 @@ function startSpiralEngine() {
 
 function stopSpiralEngine() {
     clearInterval(spiralInterval);
-}
+}startSpiralEngine();
+stopSpiralEngine();
