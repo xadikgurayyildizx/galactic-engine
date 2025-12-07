@@ -196,3 +196,44 @@ deactivateBtn.onclick = () => {
     stopCosmicWind();
     vibrate(0);
 };
+// --- DIMENSIONAL SPIRAL ENGINE ---
+let spiralInterval;
+
+function startSpiralEngine() {
+    const ctx = new AudioContext();
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 120; // temel titreşim
+
+    const gain = ctx.createGain();
+    gain.gain.value = 0.15;
+
+    const pan = ctx.createStereoPanner();
+    pan.pan.value = 0;
+
+    osc.connect(gain);
+    gain.connect(pan);
+    pan.connect(ctx.destination);
+
+    osc.start();
+
+    // Spiral hareket
+    spiralInterval = setInterval(() => {
+        const t = Date.now() / 1000;
+
+        // Pan spiral (sağ-sol dönüş)
+        pan.pan.value = Math.sin(t * 0.7);
+
+        // Spiral genişleme
+        gain.gain.value = 0.1 + 0.05 * Math.sin(t * 1.1);
+
+        // Spiral frekans dalgası
+        osc.frequency.value = 120 + 15 * Math.sin(t * 0.9);
+
+    }, 50);
+}
+
+function stopSpiralEngine() {
+    clearInterval(spiralInterval);
+}
