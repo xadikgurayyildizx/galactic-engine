@@ -119,3 +119,80 @@ deactivateBtn.onclick = () => {
     stopPulsarEngine();
     vibrate(0);
 };
+// --- COSMIC WIND LAYER ---
+let windNode, windGain, windPan, windFilter, windInterval;
+
+function startCosmicWind() {
+    const ctx = new AudioContext();
+
+    // Create noise buffer
+    const bufferSize = 2 * ctx.sampleRate;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * 0.3;
+    }
+
+    windNode = ctx.createBufferSource();
+    windNode.buffer = noiseBuffer;
+    windNode.loop = true;
+
+    windGain = ctx.createGain();
+    windGain.gain.value = 0.2;
+
+    windPan = ctx.createStereoPanner();
+    windPan.pan.value = 0;
+
+    windFilter = ctx.createBiquadFilter();
+    windFilter.type = "lowpass";
+    windFilter.frequency.value = 300;
+
+    windNode.connect(windFilter);
+    windFilter.connect(windGain);
+    windGain.connect(windPan);
+    windPan.connect(ctx.destination);
+
+    windNode.start();
+
+    // AUTO movement
+    windInterval = setInterval(() => {
+        const drift = Math.random() * 0.6 + 0.2;
+
+        // Filter breathing
+        windFilter.frequency.value = 200 + drift * 800;
+
+        // Pan drift left/right
+        windPan.pan.value = Math.random() * 2 - 1;
+
+        // Volume shift
+        windGain.gain.value = 0.15 + Math.random() * 0.2;
+
+    }, 1500);
+}
+
+function stopCosmicWind() {
+    try { windNode.stop(); } catch (e) {}
+    clearInterval(windInterval);
+}
+
+
+// Activate'e bağla
+activateBtn.onclick = () => {
+    active = true;
+    statusBox.innerText = "Aktif • Quantum + Pulsar + Cosmic Wind Çalışıyor ⚡";
+
+    startQuantumDrift();
+    startPulsarEngine();
+    startCosmicWind();
+};
+
+deactivateBtn.onclick = () => {
+    active = false;
+    statusBox.innerText = "Durdu.";
+
+    stopQuantumDrift();
+    stopPulsarEngine();
+    stopCosmicWind();
+    vibrate(0);
+};
