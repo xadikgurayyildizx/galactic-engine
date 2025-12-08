@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G-MODE • Control the Flow</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="hud-header">
+      <div id="warpStatus">WARP STATUS: STANDBY</div>
+    </header>
+
+    <main class="hud-main">
+      <section class="core-section">
+        <div class="core-wrapper">
+          <div class="core">
+            <div class="spiral"></div>
+            <div class="energy-core"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="systems-panel">
+        <h2>SYSTEMS PANEL</h2>
+        <div class="panel-row">
+          <span class="label">
+            <span class="icon">┈╹ ))</span>
+            Audio Level
+          </span>
+          <span class="value" id="audioLevel">MID</span>
+        </div>
+        <div class="panel-row">
+          <span class="label">
+            <span class="icon">∿</span>
+            Pulse Sync
+          </span>
+          <span class="value" id="pulseSync">ACTIVE</span>
+        </div>
+        <div class="panel-row">
+          <span class="label">
+            <span class="icon">⟳</span>
+            Color Invert
+          </span>
+          <span class="value" id="colorMode">PER-PULSE</span>
+        </div>
+        <div class="panel-row">
+          <span class="label">
+            <span class="icon">⇄</span>
+            Spiral Velocity
+          </span>
+          <span class="value" id="velocity">MEDIUM</span>
+        </div>
+        <div class="panel-row">
+          <span class="label">
+            <span class="icon">●</span>
+            Warp Stability
+          </span>
+          <span class="value" id="stability">OPTIMAL</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="hud-footer">
+      <button id="gToggle" class="g-button">
+        G • AKTİF ET
+      </button>
+      <div class="tagline">Control the Flow.</div>
+    </div>
+  </div>
+
+  <audio id="soundStart" preload="auto">
+    <source src="" type="audio/wav">
+    <!-- İstersen sonra gerçek bir ses dosyası ekleyebilirsin -->
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
