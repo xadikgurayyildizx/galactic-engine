@@ -1,0 +1,8 @@
+g-mode/
+  index.html
+  styles.css
+  script.js
+  sounds/
+     boot.wav
+     pulse.wav
+     shutdown.wav
