@@ -1,0 +1,77 @@
+const app = document.querySelector(".app");
+const warpStatus = document.getElementById("warpStatus");
+const gToggle = document.getElementById("gToggle");
+
+let isActive = false;
+let bootTimers = [];
+let pulseInterval = null;
+
+gToggle.addEventListener("click", () => {
+  gToggle.classList.remove("ripple","glow");
+  void gToggle.offsetWidth;
+  gToggle.classList.add("ripple","glow");
+
+  if (!isActive) startBoot();
+  else shutdown();
+});
+
+/* BOOT SEQUENCE */
+function startBoot(){
+  clearBoot();
+  clearPulse();
+
+  isActive = false;
+  app.classList.remove("active","shutting-down");
+  app.classList.add("booting");
+
+  warpStatus.textContent = "SYSTEM INITIALIZING...";
+
+  bootTimers.push(setTimeout(()=>warpStatus.textContent="WARP CORE ONLINE",600));
+  bootTimers.push(setTimeout(()=>warpStatus.textContent="SYNCING MODULES...",1200));
+
+  bootTimers.push(setTimeout(()=>{
+    warpStatus.textContent="WARP STATUS: ONLINE";
+    app.classList.remove("booting");
+    app.classList.add("active");
+    isActive = true;
+    startPulse();
+  },1900));
+}
+
+function clearBoot(){
+  bootTimers.forEach(id=>clearTimeout(id));
+  bootTimers=[];
+}
+
+/* PULSE */
+function startPulse(){
+  clearPulse();
+  pulseInterval = setInterval(()=>{
+    app.classList.add("pulse-active");
+    setTimeout(()=>app.classList.remove("pulse-active"),170);
+  },2400);
+}
+
+function clearPulse(){
+  if(pulseInterval) clearInterval(pulseInterval);
+  pulseInterval=null;
+  app.classList.remove("pulse-active");
+}
+
+/* SHUTDOWN */
+function shutdown(){
+  clearBoot();
+  clearPulse();
+  app.classList.add("shutting-down");
+  warpStatus.textContent="WARP STATUS: OFFLINE";
+
+  setTimeout(()=>{
+    app.classList.remove("active","shutting-down");
+    app.classList.add("standby");
+    warpStatus.textContent="WARP STATUS: STANDBY";
+    isActive=false;
+  },700);
+}
+
+/* INITIAL */
+app.classList.add("standby");
