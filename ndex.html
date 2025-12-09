@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>G-MODE</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  height:100%;
+  background:#02040a;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro",Roboto,sans-serif;
+  color:#d7eaff;
+}
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.app{
+  width:100%;
+  max-width:480px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  position:relative;
+}
+.app::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 25% 30%,rgba(168,216,255,0.15),transparent 45%),
+    radial-gradient(circle at 75% 80%,rgba(168,216,255,0.12),transparent 50%);
+  opacity:.18;
+  pointer-events:none;
+}
+.hud-header{
+  border:1px solid rgba(168,216,255,0.4);
+  padding:8px;
+  border-radius:6px;
+  text-align:center;
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  background:rgba(6,14,32,0.9);
+  box-shadow:
+    0 0 12px rgba(168,216,255,0.25),
+    inset 0 0 6px rgba(168,216,255,0.15);
+}
+.hud-main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.core-section{
+  border:1px solid rgba(168,216,255,0.35);
+  border-radius:12px;
+  padding:16px;
+  background:radial-gradient(circle at 50% 0%,#0b1327,#02040a 70%);
+  box-shadow:
+    0 0 30px rgba(168,216,255,0.18),
+    inset 0 0 24px rgba(0,0,0,0.85);
+}
+.core-wrapper{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.core{
+  position:relative;
+  width:210px;
+  height:210px;
+}
+.spiral{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:2px solid rgba(168,216,255,0.75);
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(168,216,255,0.10),
+      rgba(91,79,255,0.55),
+      rgba(168,216,255,0.10)
+    );
+  box-shadow:
+    0 0 22px rgba(168,216,255,0.85),
+    inset 0 0 18px rgba(168,216,255,0.45);
+  animation:spin 18s linear infinite;
+  mix-blend-mode:screen;
+}
+.app.pulse-active .spiral{
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(91,79,255,0.75),
+      rgba(168,216,255,0.35),
+      rgba(91,79,255,0.75)
+    );
+  box-shadow:
+    0 0 30px rgba(168,216,255,1),
+    0 0 40px rgba(91,79,255,0.8);
+}
+.energy-core{
+  position:absolute;
+  inset:34px;
+  border-radius:50%;
+  background:radial-gradient(circle,#a8d8ff,#081020 60%,#02040a);
+  box-shadow:
+    0 0 16px rgba(168,216,255,0.8),
+    inset 0 0 6px rgba(168,216,255,0.3);
+  transition:transform .2s ease,opacity .2s ease;
+}
+.app.active .energy-core{opacity:1;}
+.app.standby .energy-core{opacity:.6;}
+.app.pulse-active .energy-core{transform:scale(1.06);}
+.systems-panel{
+  border:1px solid rgba(168,216,255,0.35);
+  border-radius:12px;
+  padding:14px;
+  background:rgba(6,14,32,0.9);
+  box-shadow:
+    0 0 18px rgba(0,0,0,0.85),
+    inset 0 0 14px rgba(168,216,255,0.12);
+}
+.systems-panel h2{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-align:center;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  color:rgba(168,216,255,0.75);
+}
+.panel-row{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid rgba(168,216,255,0.12);
+  font-size:12px;
+}
+.panel-row:last-child{border-bottom:none;}
+.label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:rgba(200,220,255,0.85);
+}
+.icon{font-size:11px;opacity:.8;}
+.value{font-weight:600;}
+.hud-footer{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  text-align:center;
+}
+.g-button{
+  padding:12px 28px;
+  border-radius:999px;
+  background:radial-gradient(circle at 50% 0,#112033,#050812 60%);
+  border:1px solid rgba(168,216,255,0.75);
+  color:#e8f2ff;
+  font-size:13px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:
+    0 0 22px rgba(168,216,255,0.5),
+    inset 0 0 12px rgba(168,216,255,0.15);
+  transition:transform .1s ease,box-shadow .15s ease;
+  position:relative;
+  overflow:hidden;
+}
+.g-button.glow{
+  border-color:rgba(168,216,255,1);
+  box-shadow:
+    0 0 28px rgba(168,216,255,0.9),
+    inset 0 0 14px rgba(168,216,255,0.45);
+}
+.g-button::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:radial-gradient(circle,rgba(168,216,255,0.65),transparent 70%);
+  opacity:0;
+  transform:scale(0.2);
+  transition:opacity .3s ease,transform .3s ease;
+}
+.g-button.ripple::before{
+  opacity:.85;
+  transform:scale(1.3);
+}
+.tagline{
+  font-size:11px;
+  letter-spacing:.14em;
+  color:rgba(168,216,255,0.7);
+}
+.app.booting #warpStatus{color:#a8d8ff;}
+.app.active #warpStatus{color:#fff;}
+.app.shutting-down{
+  opacity:.92;
+  filter:grayscale(.4);
+  transition:opacity .4s,filter .4s;
+}
+@keyframes spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app standby">
+  <header class="hud-header">
+    <div id="warpStatus">WARP STATUS: STANDBY</div>
+  </header>
+
+  <main class="hud-main">
+    <section class="core-section">
+      <div class="core-wrapper">
+        <div class="core">
+          <div class="spiral"></div>
+          <div class="energy-core"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="systems-panel">
+      <h2>SYSTEMS PANEL</h2>
+      <div class="panel-row">
+        <span class="label"><span class="icon">┈╹ ))</span> Audio Level</span>
+        <span class="value">MID</span>
+      </div>
+      <div class="panel-row">
+        <span class="label"><span class="icon">∿</span> Pulse Sync</span>
+        <span class="value">ACTIVE</span>
+      </div>
+      <div class="panel-row">
+        <span class="label"><span class="icon">⟳</span> Color Invert</span>
+        <span class="value">PER-PULSE</span>
+      </div>
+      <div class="panel-row">
+        <span class="label"><span class="icon">⇄</span> Spiral Velocity</span>
+        <span class="value">MEDIUM</span>
+      </div>
+      <div class="panel-row">
+        <span class="label"><span class="icon">●</span> Warp Stability</span>
+        <span class="value">OPTIMAL</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="hud-footer">
+    <button id="gToggle" class="g-button">G • AKTİF ET</button>
+    <div class="tagline">Control the Flow.</div>
+  </footer>
+</div>
+
+<script>
+const app = document.querySelector(".app");
+const warpStatus = document.getElementById("warpStatus");
+const gToggle = document.getElementById("gToggle");
+
+let isActive = false;
+let bootTimers = [];
+let pulseInterval = null;
+
+gToggle.addEventListener("click", () => {
+  gToggle.classList.remove("ripple","glow");
+  void gToggle.offsetWidth;
+  gToggle.classList.add("ripple","glow");
+
+  if (!isActive) startBoot();
+  else shutdown();
+});
+
+function startBoot(){
+  clearBoot();
+  clearPulse();
+
+  isActive = false;
+  app.classList.remove("active","shutting-down");
+  app.classList.add("booting");
+
+  warpStatus.textContent = "SYSTEM INITIALIZING...";
+
+  bootTimers.push(setTimeout(()=>warpStatus.textContent="WARP CORE ONLINE",600));
+  bootTimers.push(setTimeout(()=>warpStatus.textContent="SYNCING MODULES...",1200));
+
+  bootTimers.push(setTimeout(()=>{
+    warpStatus.textContent="WARP STATUS: ONLINE";
+    app.classList.remove("booting");
+    app.classList.add("active");
+    isActive = true;
+    startPulse();
+  },1900));
+}
+
+function clearBoot(){
+  bootTimers.forEach(id=>clearTimeout(id));
+  bootTimers=[];
+}
+
+function startPulse(){
+  clearPulse();
+  pulseInterval = setInterval(()=>{
+    app.classList.add("pulse-active");
+    setTimeout(()=>app.classList.remove("pulse-active"),170);
+  },2400);
+}
+
+function clearPulse(){
+  if(pulseInterval) clearInterval(pulseInterval);
+  pulseInterval=null;
+  app.classList.remove("pulse-active");
+}
+
+function shutdown(){
+  clearBoot();
+  clearPulse();
+
+  app.classList.add("shutting-down");
+  warpStatus.textContent="WARP STATUS: OFFLINE";
+
+  setTimeout(()=>{
+    app.classList.remove("active","shutting-down");
+    app.classList.add("standby");
+    warpStatus.textContent="WARP STATUS: STANDBY";
+    isActive=false;
+  },700);
+}
+
+app.classList.add("standby");
+</script>
+
+</body>
+</html>
