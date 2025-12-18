@@ -1,0 +1,4 @@
+galactic-engine/
+├─ gmode_live.py   ← SAHNE (dokunma)
+├─ gmode_lab.py    ← DENE (oyna)
+└─ README.md       ← 10 satır, net
